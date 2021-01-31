@@ -1,0 +1,73 @@
+/*
+   Licensed under the MIT license:
+
+   Copyright (c) 2021 Mladen Turk
+
+   Permission is  hereby granted,  free of charge,  to any  person obtaining
+   a  copy  of  this  software   and  associated  documentation  files  (the
+   "Software"),  to  deal in  the  Software  without restriction,  including
+   without  limitation the  rights  to use,  copy,  modify, merge,  publish,
+   distribute, sublicense, and/or sell copies of the Software, and to permit
+   persons  to whom  the Software  is  furnished to  do so,  subject to  the
+   following conditions:
+
+   The above copyright  notice and this permission notice  shall be included
+   in all copies or substantial portions of the Software.
+
+   THE  SOFTWARE  IS  PROVIDED  "AS  IS",  WITHOUT  WARRANTY  OF  ANY  KIND,
+   EXPRESS  OR IMPLIED,  INCLUDING  BUT  NOT LIMITED  TO  THE WARRANTIES  OF
+   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+   NO EVENT SHALL THE AUTHORS OR  COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+   DAMAGES OR  OTHER LIABILITY, WHETHER  IN AN  ACTION OF CONTRACT,  TORT OR
+   OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+   USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
+#include <winver.h>
+
+#define XML_DESCRIPTION \
+  "Expat is a C library for parsing XML, started by James Clark. " \
+  "Expat is a stream-oriented XML parser."
+
+#define XML_VERSION_STRING_CSV   2,2,10
+#define XML_VERSION_STRING      "2.2.10"
+#ifdef XML_UNICODE_WCHAR_T
+#define XML_DLL_BASENAME        "libexpatw"
+#else
+#define XML_DLL_BASENAME        "libexpat"
+#endif
+#define XML_COPYRIGHT           "MIT/X License"
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION XML_VERSION_STRING_CSV,0
+ PRODUCTVERSION XML_VERSION_STRING_CSV,0
+ FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS VOS_NT_WINDOWS32
+ FILETYPE VFT_DLL
+ FILESUBTYPE 0x0L
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "040904b0"
+    BEGIN
+      VALUE "Comments",         XML_DESCRIPTION
+      VALUE "CompanyName",      "Expat maintainers"
+      VALUE "FileDescription",  "Lite libexpat for Windows"
+      VALUE "FileVersion",      XML_VERSION_STRING
+      VALUE "InternalName",     XML_DLL_BASENAME ".dll"
+      VALUE "LegalCopyright",   XML_COPYRIGHT
+      VALUE "OriginalFilename", XML_DLL_BASENAME ".dll"
+      VALUE "ProductName",      "Expat"
+      VALUE "ProductVersion",   XML_VERSION_STRING
+    END
+  END
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x409, 1200
+  END
+END
