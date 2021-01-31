@@ -66,9 +66,9 @@ LDFLAGS = /nologo /INCREMENTAL:NO /OPT:REF /DLL /SUBSYSTEM:CONSOLE /MACHINE:$(BU
 CFLAGS  = $(CFLAGS) -DXML_UNICODE_WCHAR_T
 PROJECT = $(PROJECT)w
 RFLAGS  = $(RFLAGS) /d XML_UNICODE_WCHAR_T
-WORKDIR = $(BUILD_CPU)-relw-$(TARGET)
+WORKDIR = $(BUILD_CPU)-w-$(TARGET)
 !ELSE
-WORKDIR = $(BUILD_CPU)-rela-$(TARGET)
+WORKDIR = $(BUILD_CPU)-a-$(TARGET)
 !ENDIF
 
 OUTPUT  = $(WORKDIR)\$(PROJECT).$(TARGET)
@@ -104,19 +104,19 @@ $(OUTPUT): $(WORKDIR) $(OBJECTS)
 	$(AR) $(ARFLAGS) $(OBJECTS) /out:$(OUTPUT)
 !ENDIF
 
-!IF !DEFINED(PREFIX) || "$(PREFIX)" == ""
+!IF !DEFINED(INSTALLDIR) || "$(INSTALLDIR)" == ""
 install:
-	@echo PREFIX is not defined
-	@echo Use `nmake install PREFIX=directory`
+	@echo INSTALLDIR is not defined
+	@echo Use `nmake install INSTALLDIR=directory`
 	@echo.
 	@exit /B 1
 !ELSE
 install : all
 !IF "$(TARGET)" == "dll"
-	@xcopy /I /Y /Q "$(WORKDIR)\*.dll" "$(PREFIX)\bin"
+	@xcopy /I /Y /Q "$(WORKDIR)\*.dll" "$(INSTALLDIR)\bin"
 !ENDIF
-	@xcopy /I /Y /Q "$(WORKDIR)\*.lib" "$(PREFIX)\$(TARGET_LIB)"
-	@xcopy /I /Y /Q "$(SRCDIR)\include\expa*.h" "$(PREFIX)\include"
+	@xcopy /I /Y /Q "$(WORKDIR)\*.lib" "$(INSTALLDIR)\$(TARGET_LIB)"
+	@xcopy /I /Y /Q "$(SRCDIR)\include\expa*.h" "$(INSTALLDIR)\include"
 !ENDIF
 
 clean:
