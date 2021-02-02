@@ -118,7 +118,7 @@ install : all
 	@xcopy /I /Y /Q "$(WORKDIR)\*.dll" "$(INSTALLDIR)\bin"
 !ENDIF
 	@xcopy /I /Y /Q "$(WORKDIR)\*.lib" "$(INSTALLDIR)\$(TARGET_LIB)"
-	@xcopy /I /Y /Q "$(SRCDIR)\include\expa*.h" "$(INSTALLDIR)\include"
+	@xcopy /I /Y /Q "$(SRCDIR)\lib\expa*.h" "$(INSTALLDIR)\include"
 !ENDIF
 
 clean:
