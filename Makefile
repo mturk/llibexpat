@@ -78,8 +78,7 @@ OUTPUT  = $(WORKDIR)\$(PROJECT).$(TARGET)
 CLOPTS = /c /nologo /wd4996 $(CRT_CFLAGS) -W3 -O2 -Ob2 -Zi
 RFLAGS = $(RFLAGS) /d _WIN32_WINNT=$(WINVER) $(EXTRA_RFLAGS)
 LDLIBS = kernel32.lib $(EXTRA_LIBS)
-OUTFLAGS = -Fo$(WORKDIR)\ -Fd$(WORKDIR)\$(PROJECT)
-BUILDPDB = $(WORKDIR)\$(PROJECT).pdb
+OUTPDB = $(WORKDIR)\$(PROJECT).pdb
 
 OBJECTS = \
 	$(WORKDIR)\xmlparse.obj \
@@ -96,14 +95,14 @@ $(WORKDIR) :
 	@-md $(WORKDIR)
 
 {$(SRCDIR)\lib}.c{$(WORKDIR)}.obj:
-	$(CC) $(CLOPTS) $(CFLAGS) $(OUTFLAGS) $<
+	$(CC) $(CLOPTS) $(CFLAGS) -Fo$(WORKDIR)\ -Fd$(WORKDIR)\$(PROJECT) $<
 
 {$(SRCDIR)\win32}.rc{$(WORKDIR)}.res:
 	$(RC) $(RFLAGS) /fo $@ $<
 
 $(OUTPUT): $(WORKDIR) $(OBJECTS)
 !IF "$(TARGET)" == "dll"
-	$(LN) $(LDFLAGS) $(OBJECTS) $(LDLIBS) /def:$(SRCDIR)\lib\$(PROJECT).def /pdb:$(BUILDPDB) /out:$(OUTPUT)
+	$(LN) $(LDFLAGS) $(OBJECTS) $(LDLIBS) /def:$(SRCDIR)\lib\$(PROJECT).def /pdb:$(OUTPDB) /out:$(OUTPUT)
 !ELSE
 	$(AR) $(ARFLAGS) $(OBJECTS) /out:$(OUTPUT)
 !ENDIF
