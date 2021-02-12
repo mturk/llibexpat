@@ -62,7 +62,7 @@ ARFLAGS = /nologo /SUBSYSTEM:CONSOLE /MACHINE:$(CPU) $(EXTRA_ARFLAGS)
 !ELSE
 TARGET  = dll
 PROJECT = libexpat
-LDFLAGS = /nologo /INCREMENTAL:NO /OPT:REF /DLL /DEBUG /SUBSYSTEM:CONSOLE /MACHINE:$(CPU) $(EXTRA_LDFLAGS)
+LDFLAGS = /nologo /INCREMENTAL:NO /OPT:REF /DLL /SUBSYSTEM:CONSOLE /MACHINE:$(CPU) $(EXTRA_LDFLAGS)
 !ENDIF
 
 !IF DEFINED(_UNICODE)
@@ -76,10 +76,15 @@ WORKDIR = $(CPU)-a-$(TARGET)
 
 OUTPUT  = $(WORKDIR)\$(PROJECT).$(TARGET)
 
-CLOPTS = /c /nologo /wd4996 $(CRT_CFLAGS) -W3 -O2 -Ob2 -Zi
+CLOPTS = /c /nologo /wd4996 $(CRT_CFLAGS) -W3 -O2 -Ob2
 RFLAGS = $(RFLAGS) /d _WIN32_WINNT=$(WINVER) $(EXTRA_RFLAGS)
 LDLIBS = kernel32.lib $(EXTRA_LIBS)
-OUTPDB = $(WORKDIR)\$(PROJECT).pdb
+!IF DEFINED(_PDB)
+PDBNAME  = -Fd$(WORKDIR)\$(PROJECT)
+OUTPDB   = /pdb:$(WORKDIR)\$(PROJECT).pdb
+CLOPTS   = $(CLOPTS) -Zi
+LDFLAGS  = $(LDFLAGS) /DEBUG
+!ENDIF
 
 OBJECTS = \
 	$(WORKDIR)\xmlparse.obj \
@@ -96,14 +101,14 @@ $(WORKDIR) :
 	@-md $(WORKDIR)
 
 {$(SRCDIR)\lib}.c{$(WORKDIR)}.obj:
-	$(CC) $(CLOPTS) $(CFLAGS) -Fo$(WORKDIR)\ -Fd$(WORKDIR)\$(PROJECT) $<
+	$(CC) $(CLOPTS) $(CFLAGS) -Fo$(WORKDIR)\ $(PDBNAME) $<
 
 {$(SRCDIR)\win32}.rc{$(WORKDIR)}.res:
 	$(RC) $(RFLAGS) /fo $@ $<
 
 $(OUTPUT): $(WORKDIR) $(OBJECTS)
 !IF "$(TARGET)" == "dll"
-	$(LN) $(LDFLAGS) $(OBJECTS) $(LDLIBS) /def:$(SRCDIR)\lib\$(PROJECT).def /pdb:$(OUTPDB) /out:$(OUTPUT)
+	$(LN) $(LDFLAGS) $(OBJECTS) $(LDLIBS) /def:$(SRCDIR)\lib\$(PROJECT).def $(OUTPDB) /out:$(OUTPUT)
 !ELSE
 	$(AR) $(ARFLAGS) $(OBJECTS) /out:$(OUTPUT)
 !ENDIF
@@ -119,7 +124,9 @@ install : all
 !IF "$(TARGET)" == "dll"
 	@xcopy /I /Y /Q "$(WORKDIR)\*.dll" "$(INSTALLDIR)\bin"
 !ENDIF
+!IF DEFINED(_PDB)
 	@xcopy /I /Y /Q "$(WORKDIR)\*.pdb" "$(INSTALLDIR)\bin"
+!ENDIF
 	@xcopy /I /Y /Q "$(WORKDIR)\*.lib" "$(INSTALLDIR)\$(TARGET_LIB)"
 	@xcopy /I /Y /Q "$(SRCDIR)\lib\expa*.h" "$(INSTALLDIR)\include"
 !ENDIF
