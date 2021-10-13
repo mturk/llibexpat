@@ -23,15 +23,42 @@
    USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <winver.h>
+#include <windows.h>
 
 #define XML_DESCRIPTION \
   "Expat is a C library for parsing XML, started by James Clark. " \
   "Expat is a stream-oriented XML parser."
 
-#define XML_VERSION_VENDOR      "_1"
-#define XML_VERSION_STRING_CSV   2,2,10
-#define XML_VERSION_STRING      "2.2.10" XML_VERSION_VENDOR
+#define CPP_TOSTR_HELPER(n)     #n
+#define CPP_TOSTR(n)            CPP_TOSTR_HELPER(n)
+
+
+#define XML_MAJOR_VERSION       2
+#define XML_MINOR_VERSION       2
+#define XML_MICRO_VERSION       10
+#if defined(_VENDOR_NUM)
+# define XML_PATCH_VERSION      _VENDOR_NUM
+#else
+# define XML_PATCH_VERSION      0
+#endif
+#if defined(_VENDOR_SFX)
+# define XML_VENDOR_SFX         CPP_TOSTR(_VENDOR_SFX)
+#else
+# define XML_VENDOR_SFX         ""
+#endif
+
+#define XML_VERSION_STRING \
+                          CPP_TOSTR(XML_MAJOR_VERSION) "."  \
+                          CPP_TOSTR(XML_MINOR_VERSION) "."  \
+                          CPP_TOSTR(XML_MICRO_VERSION)      \
+                          XML_VENDOR_SFX
+
+#define XML_VERSION_STRING_CSV      XML_MAJOR_VERSION,      \
+                                    XML_MINOR_VERSION,      \
+                                    XML_MICRO_VERSION,      \
+                                    XML_PATCH_VERSION
+
+
 #ifdef XML_UNICODE_WCHAR_T
 #define XML_DLL_BASENAME        "libexpatw"
 #else
@@ -40,8 +67,8 @@
 #define XML_COPYRIGHT           "MIT/X License"
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION XML_VERSION_STRING_CSV,0
- PRODUCTVERSION XML_VERSION_STRING_CSV,0
+ FILEVERSION XML_VERSION_STRING_CSV
+ PRODUCTVERSION XML_VERSION_STRING_CSV
  FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
 #ifdef _DEBUG
  FILEFLAGS 0x1L
