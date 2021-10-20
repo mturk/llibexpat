@@ -21,15 +21,8 @@ AR = lib.exe
 RC = rc.exe
 SRCDIR = .
 
-!IF !DEFINED(BUILD_CPU) || "$(BUILD_CPU)" == ""
-!IF DEFINED(VSCMD_ARG_TGT_ARCH)
-CPU = $(VSCMD_ARG_TGT_ARCH)
-!ELSE
-!ERROR Must specify BUILD_CPU matching compiler x86 or x64
-!ENDIF
-!ELSE
-CPU = $(BUILD_CPU)
-!ENDIF
+_CPU = x64
+_LIB = lib64
 
 !IF !DEFINED(WINVER) || "$(WINVER)" == ""
 WINVER = 0x0601
@@ -42,10 +35,6 @@ EXTRA_LIBS =
 CRT_CFLAGS = -MD
 !ENDIF
 
-!IF !DEFINED(TARGET_LIB) || "$(TARGET_LIB)" == ""
-TARGET_LIB = lib
-!ENDIF
-
 CFLAGS = $(CFLAGS) -I$(SRCDIR)\lib -DXML_BUILDING_EXPAT
 CFLAGS = $(CFLAGS) -DNDEBUG -DWIN32 -D_WIN32_WINNT=$(WINVER) -DWINVER=$(WINVER)
 CFLAGS = $(CFLAGS) -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE $(EXTRA_CFLAGS)
@@ -55,11 +44,11 @@ RFLAGS = /l 0x409 /n /d NDEBUG /d WIN32 /d WINNT /d WINVER=$(WINVER)
 TARGET  = lib
 CFLAGS  = $(CFLAGS) -DXML_STATIC
 PROJECT = expat
-ARFLAGS = /nologo /MACHINE:$(CPU) $(EXTRA_ARFLAGS)
+ARFLAGS = /nologo /MACHINE:$(_CPU) $(EXTRA_ARFLAGS)
 !ELSE
 TARGET  = dll
 PROJECT = libexpat
-LDFLAGS = /nologo /INCREMENTAL:NO /OPT:REF /DLL /SUBSYSTEM:WINDOWS /MACHINE:$(CPU) $(EXTRA_LDFLAGS)
+LDFLAGS = /nologo /INCREMENTAL:NO /OPT:REF /DLL /SUBSYSTEM:WINDOWS /MACHINE:$(_CPU) $(EXTRA_LDFLAGS)
 !ENDIF
 
 !IF DEFINED(_UNICODE)
@@ -117,22 +106,22 @@ $(OUTPUT): $(WORKDIR) $(OBJECTS)
 	$(AR) $(ARFLAGS) $(OBJECTS) /out:$(OUTPUT)
 !ENDIF
 
-!IF !DEFINED(INSTALLDIR) || "$(INSTALLDIR)" == ""
+!IF !DEFINED(PREFIX) || "$(PREFIX)" == ""
 install:
-	@echo INSTALLDIR is not defined
-	@echo Use `nmake install INSTALLDIR=directory`
+	@echo PREFIX is not defined
+	@echo Use `nmake install PREFIX=directory`
 	@echo.
 	@exit /B 1
 !ELSE
 install : all
 !IF "$(TARGET)" == "dll"
-	@xcopy /I /Y /Q "$(WORKDIR)\*.dll" "$(INSTALLDIR)\bin"
+	@xcopy /I /Y /Q "$(WORKDIR)\*.dll" "$(PREFIX)\bin"
 !ENDIF
 !IF DEFINED(_PDB)
-	@xcopy /I /Y /Q "$(WORKDIR)\*.pdb" "$(INSTALLDIR)\bin"
+	@xcopy /I /Y /Q "$(WORKDIR)\*.pdb" "$(PREFIX)\bin"
 !ENDIF
-	@xcopy /I /Y /Q "$(WORKDIR)\*.lib" "$(INSTALLDIR)\$(TARGET_LIB)"
-	@xcopy /I /Y /Q "$(SRCDIR)\lib\expa*.h" "$(INSTALLDIR)\include"
+	@xcopy /I /Y /Q "$(WORKDIR)\*.lib" "$(PREFIX)\$(_LIB)"
+	@xcopy /I /Y /Q "$(SRCDIR)\lib\expa*.h" "$(PREFIX)\include"
 !ENDIF
 
 clean:
