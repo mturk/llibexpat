@@ -45,6 +45,7 @@ TARGET  = lib
 CFLAGS  = $(CFLAGS) -DXML_STATIC
 PROJECT = expat
 ARFLAGS = /nologo /MACHINE:$(_CPU) $(EXTRA_ARFLAGS)
+!UNDEF _PDB
 !ELSE
 TARGET  = dll
 PROJECT = libexpat
