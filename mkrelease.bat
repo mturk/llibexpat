@@ -18,7 +18,7 @@ rem --------------------------------------------------
 rem Release helper script
 rem
 rem Usage: mkrelease.bat version architecture
-rem    eg: mkrelease 2.2.10_1 x64
+rem    eg: mkrelease 2.2.10_1 x64 ["_VENDOR_NUM=1"] ["_VENDOR_SFX=_1"] ["_PDB=1"]
 rem
 setlocal
 if "x%~1" == "x" goto Einval
@@ -34,19 +34,20 @@ set "BuildDir=%cd%"
 popd
 rem
 rem Create builds
-nmake "PREFIX=%BuildDir%\dist\%ReleaseName%" %~3 %~4 _STATIC=1 install
-nmake "PREFIX=%BuildDir%\dist\%ReleaseName%" %~3 %~4 install
-nmake "PREFIX=%BuildDir%\dist\%ReleaseName%" %~3 %~4 _STATIC=1 _UNICODE=1 install
-nmake "PREFIX=%BuildDir%\dist\%ReleaseName%" %~3 %~4 _UNICODE=1 install
+nmake "PREFIX=%BuildDir%\dist\%ReleaseName%" %~3 %~4 %~5 _STATIC=1 install
+nmake "PREFIX=%BuildDir%\dist\%ReleaseName%" %~3 %~4 %~5 _STATIC=1 _UNICODE=1 install
+nmake "PREFIX=%BuildDir%\dist\%ReleaseName%" %~3 %~4 %~5 install
+nmake "PREFIX=%BuildDir%\dist\%ReleaseName%" %~3 %~4 %~5 _UNICODE=1 install
 rem
 rem Set path for ClamAV and 7za
+rem set "PATH=C:\Tools\clamav;C:\Utils;%PATH%"
 rem
-set "PATH=C:\Tools\clamav;C:\Utils;%PATH%"
 pushd "%BuildDir%\dist"
 rem
 freshclam.exe --quiet
 echo ## Binary release v%ReleaseVersion% > %ReleaseName%.txt
 echo. >> %ReleaseName%.txt
+echo Build using mkrelease %* >> %ReleaseName%.txt
 echo. >> %ReleaseName%.txt
 echo ```no-highlight >> %ReleaseName%.txt
 clamscan.exe --version >> %ReleaseName%.txt
