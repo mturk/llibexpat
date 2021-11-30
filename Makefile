@@ -19,7 +19,7 @@ CC = cl.exe
 LN = link.exe
 AR = lib.exe
 RC = rc.exe
-SRCDIR = .
+SRCDIR = .\expat
 
 _CPU = x64
 _LIB = lib
